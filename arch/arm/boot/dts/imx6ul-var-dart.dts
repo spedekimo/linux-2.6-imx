@@ -43,6 +43,13 @@
 		#address-cells = <1>;
 		#size-cells = <0>;
 
+		touch_3v3_regulator: touch_3v3_regulator {
+			compatible = "regulator-fixed";
+			regulator-name = "touch_3v3_supply";
+			regulator-always-on;
+			status = "okay";
+		};
+
 #ifdef WIFI
 		wlan_en_reg: fixedregulator@2 {
 			compatible = "regulator-fixed";
@@ -174,15 +181,6 @@
 	status = "okay";
 };
 
-&tsc {
-	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_tsc>;
-	status = "okay";
-	xnur-gpio = <&gpio1 3 0>;
-	measure_delay_time = <0xffff>;
-	pre_charge_time = <0xfff>;
-};
-
 &uart1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart1>;
@@ -277,18 +275,40 @@
 #endif
 
 &i2c1 {
-	clock-frequency = <100000>;
+	clock-frequency = <400000>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_i2c1>;
 	status = "okay";
 
-	codec: da7213@1a {
-		compatible = "fsl,da7213";
-		reg = <0x1a>;
-		clocks = <&clks IMX6UL_CLK_SAI2>;
-		clock-names = "mclk";
-	};
+	ft5x06_ts@38 {
+			compatible = "focaltech,5x06";
+			reg = <0x38>;
+			focaltech,family-id = <0x54>;
+			interrupt-parent = <&gpio3>;
+			interrupts = <4 0>;
+			vdd-supply = <&touch_3v3_regulator>;
+			vcc_i2c-supply = <&touch_3v3_regulator>;
+			focaltech,irq-gpio = <&gpio3 4 0x00>;
+			focaltech,display-coords = <0 0 800 480>;
+			focaltech,name = "ft6x06";
+			focaltech,no-force-update;
+			focaltech,group-id = <1>;
+			focaltech,hard-reset-delay-ms = <20>;
+			focaltech,soft-reset-delay-ms = <150>;
+			focaltech,num-max-touches = <2>;
+			focaltech,fw-name = "ft_8610_qrd_fw.bin";
+			focaltech,fw-delay-aa-ms = <100>;
+			focaltech,fw-delay-55-ms = <30>;
+			focaltech,fw-upgrade-id1 = <0x79>;
+			focaltech,fw-upgrade-id2 = <0x08>;
+			focaltech,fw-delay-readid-ms = <10>;
+			focaltech,fw-delay-era-flsh-ms = <2000>;
+			focaltech,fw-auto-cal;
+			focaltech,mirror_h;
+			focaltech,mirror_v;
+		};
 };
+
 
 &i2c2 {
 	clock_frequency = <100000>;
@@ -303,7 +323,7 @@
 	imx6ul-evk {
 		pinctrl_hog_1: hoggrp-1 {
 			fsl,pins = <
-				MX6UL_PAD_LCD_RESET__WDOG1_WDOG_ANY    0x30b0
+				MX6UL_PAD_LCD_RESET__GPIO3_IO04		0x1b0b0
 				MX6UL_PAD_UART1_RTS_B__GPIO1_IO19	0x17059 /* SD1 CD */
 				MX6UL_PAD_GPIO1_IO09__GPIO1_IO09        0x17059 /* SD1 RESET */
 			>;
@@ -486,15 +506,6 @@
 			>;
 		};
 #endif
-
-		pinctrl_tsc: tscgrp {
-			fsl,pin = <
-				MX6UL_PAD_GPIO1_IO01__GPIO1_IO01	0xb0
-				MX6UL_PAD_GPIO1_IO02__GPIO1_IO02	0xb0
-				MX6UL_PAD_GPIO1_IO03__GPIO1_IO03	0xb0
-				MX6UL_PAD_GPIO1_IO04__GPIO1_IO04	0xb0
-			>;
-		};
 
 		pinctrl_i2c1: i2c1grp {
 			fsl,pins = <
