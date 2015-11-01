@@ -57,8 +57,8 @@ struct wm8731_priv {
  * wm8731 register cache
  */
 static const struct reg_default wm8731_reg_defaults[] = {
-	{ 0, 0x0097 },
-	{ 1, 0x0097 },
+	{ 0, 0x0017 },
+	{ 1, 0x0017 },
 	{ 2, 0x0079 },
 	{ 3, 0x0079 },
 	{ 4, 0x000a },
@@ -165,7 +165,7 @@ SOC_DOUBLE_R("Master Playback ZC Switch", WM8731_LOUT1V, WM8731_ROUT1V,
 
 SOC_DOUBLE_R_TLV("Capture Volume", WM8731_LINVOL, WM8731_RINVOL, 0, 31, 0,
 		 in_tlv),
-SOC_DOUBLE_R("Line Capture Switch", WM8731_LINVOL, WM8731_RINVOL, 7, 1, 1),
+//SOC_DOUBLE_R("Line Capture Switch", WM8731_LINVOL, WM8731_RINVOL, 7, 1, 1),
 
 SOC_SINGLE_TLV("Mic Boost Volume", WM8731_APANA, 0, 1, 0, mic_tlv),
 SOC_SINGLE("Mic Capture Switch", WM8731_APANA, 1, 1, 1),
@@ -204,7 +204,9 @@ SND_SOC_DAPM_OUTPUT("ROUT"),
 SND_SOC_DAPM_OUTPUT("RHPOUT"),
 SND_SOC_DAPM_ADC("ADC", "HiFi Capture", WM8731_PWR, 2, 1),
 SND_SOC_DAPM_MUX("Input Mux", SND_SOC_NOPM, 0, 0, &wm8731_input_mux_controls),
-SND_SOC_DAPM_PGA("Line Input", WM8731_PWR, 0, 1, NULL, 0),
+// Line Input switch configured not correctly to disable the power down of the Line In input
+// Otherwise high levels on the Line In Input are heared in the HP output
+SND_SOC_DAPM_PGA("Line Input", WM8731_PWR, 6, 1, NULL, 0),
 SND_SOC_DAPM_MICBIAS("Mic Bias", WM8731_PWR, 1, 1),
 SND_SOC_DAPM_INPUT("MICIN"),
 SND_SOC_DAPM_INPUT("RLINEIN"),
@@ -623,6 +625,8 @@ static int wm8731_probe(struct snd_soc_codec *codec)
 
 	/* Disable bypass path by default */
 	snd_soc_update_bits(codec, WM8731_APANA, 0x8, 0);
+	/* Disable by default the Line In power down mode */
+	snd_soc_update_bits(codec, WM8731_PWR, 0x1, 0);
 
 	/* Regulators will have been enabled by bias management */
 	regulator_bulk_disable(ARRAY_SIZE(wm8731->supplies), wm8731->supplies);

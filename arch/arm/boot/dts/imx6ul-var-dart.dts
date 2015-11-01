@@ -66,6 +66,19 @@
 		};
 #endif
 	};
+
+	sound {
+		compatible = "fsl,imx-audio-wm8731";
+		model = "wm8731-audio";
+		cpu-dai = <&sai2>;
+		audio-codec = <&codec>;
+		audio-routing =
+			"Headphone Jack",	"LHPOUT",	
+			"Headphone Jack", 	"RHPOUT",
+			"LLINEIN", 			"Line Jack",
+			"RLINEIN",			"Line Jack";
+	};
+
 	
 #ifdef WIFI
 	wlcore {
@@ -78,6 +91,22 @@
 		board-ref-clock = <4>;
 	};
 #endif
+
+	leds {
+        compatible = "gpio-leds";
+        hdd {
+                label = "IDE Activity";
+                gpios = <&gpio4 20 0>;
+                linux,default-trigger = "ide-disk";
+        };
+
+        heartbeat {
+                label = "Heart Beat";
+                gpios = <&gpio4 21 0>;
+                linux,default-trigger = "heartbeat";
+        };
+};
+
 };
 
 &cpu0 {
@@ -85,12 +114,17 @@
 	soc-supply = <&reg_soc>;
 };
 
+&clks {
+	assigned-clocks = <&clks IMX6UL_CLK_PLL4_AUDIO_DIV>;
+	assigned-clock-rates = <632217600>,<688128000>;
+};
+
 &fec1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_enet1>;
 	phy-mode = "rmii";
 	phy-reset-gpios=<&gpio5 0 1>;
-	phy-reset-duration=<500>;
+	phy-reset-duration=<100>;
 	phy-handle = <&ethphy0>;
 	status = "okay";
 };
@@ -101,7 +135,7 @@
 	phy-mode = "rmii";
 	phy-handle = <&ethphy1>;
 	phy-reset-gpios=<&gpio1 10 1>;
-	phy-reset-duration=<500>;
+	phy-reset-duration=<100>;
 	status = "okay";
 	mdio {
 		#address-cells = <1>;
@@ -180,6 +214,16 @@
 };
 
 &pxp {
+	status = "okay";
+};
+
+&sai2 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_sai2>;
+	assigned-clocks = <&clks IMX6UL_CLK_SAI2_SEL>,<&clks IMX6UL_CLK_SAI2>;
+    assigned-clock-parents = <&clks IMX6UL_CLK_PLL4_AUDIO_DIV>;
+    assigned-clock-rates = <0>, <12288000>,<11289600>;
+	
 	status = "okay";
 };
 
@@ -317,6 +361,15 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_i2c2>;
 	status = "okay";
+	
+	codec: wm8731@1a {
+		compatible = "wlf,wm8731";
+		reg = <0x1a>;
+		
+		clocks = <&clks IMX6UL_CLK_SAI2>, <&clks IMX6UL_CLK_PLL4_AUDIO_DIV>;
+		clock-names = "mclk","pll4";
+	};
+
 };
 
 &iomuxc {
@@ -328,6 +381,9 @@
 				MX6UL_PAD_LCD_RESET__GPIO3_IO04		0x1b0b0
 				MX6UL_PAD_UART1_RTS_B__GPIO1_IO19	0x17059 /* SD1 CD */
 				MX6UL_PAD_GPIO1_IO09__GPIO1_IO09        0x17059 /* SD1 RESET */
+				MX6UL_PAD_CSI_HSYNC__GPIO4_IO20		0x1b0b0 
+				MX6UL_PAD_CSI_DATA00__GPIO4_IO21	0x1b0b0
+				MX6UL_PAD_GPIO1_IO00__GPIO1_IO00	0x17059
 				MX6UL_PAD_GPIO1_IO07__ENET2_MDC		0x1b0b0
 				MX6UL_PAD_GPIO1_IO06__ENET2_MDIO	0x1b0b0
 			>;
@@ -523,6 +579,15 @@
 			>;
 		};
 
+		pinctrl_sai2: sai2grp {
+			fsl,pins = <
+				MX6UL_PAD_JTAG_TDI__SAI2_TX_BCLK	0x17088
+				MX6UL_PAD_JTAG_TDO__SAI2_TX_SYNC	0x17088
+				MX6UL_PAD_JTAG_TRST_B__SAI2_TX_DATA	0x11088
+				MX6UL_PAD_JTAG_TCK__SAI2_RX_DATA	0x11088
+				MX6UL_PAD_JTAG_TMS__CCM_CLKO1		0x17088
+			>;
+		};
 	};
 };
 
