@@ -224,9 +224,10 @@ dtb-$(CONFIG_ARCH_MXC) += \
 	imx6ul-14x14-ddr3-arm2-mqs.dtb \
 	imx6ul-14x14-ddr3-arm2-spdif.dtb \
 	imx6ul-14x14-ddr3-arm2-wm8958.dtb \
-	imx6ul-var-dart-nand.dtb \
-	imx6ul-var-dart-emmc.dtb \
-	imx6ul-var-dart-sd.dtb \
+	imx6ul-var-dart-nand_wifi.dtb \
+	imx6ul-var-dart-emmc_wifi.dtb \
+	imx6ul-var-dart-sd_nand.dtb \
+	imx6ul-var-dart-sd_emmc.dtb \
 	imx6ul-14x14-evk.dtb \
 	imx6ul-14x14-evk-csi.dtb \
 	imx6ul-9x9-evk.dtb \
