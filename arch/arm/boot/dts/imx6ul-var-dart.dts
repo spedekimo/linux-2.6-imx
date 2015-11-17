@@ -304,23 +304,32 @@
 &gpmi {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_gpmi_nand_1>;
-	status = "disabled";
 	nand-on-flash-bbt;
 	status = "okay";
 	
 	partition@0 {
-		label = "uboot";
+		label = "spl";
 		reg = <0x00000000 0x00200000>;
 	};
 
 	partition@1 {
-		label = "kernel";
-		reg = <0x00200000 0x00600000>;
+		label = "uboot";
+		reg = <0x00200000 0x00200000>;
 	};
 
 	partition@2 {
+		label = "uboot-env";
+		reg = <0x00400000 0x00200000>;
+	};
+
+	partition@3 {
+		label = "kernel";
+		reg = <0x00600000 0x00800000>;
+	};
+
+	partition@4 {
 		label = "rootfs";
-		reg = <0x00800000 0x3f800000>;
+		reg = <0x00e00000 0x3f200000>;
 	};
 };
 
