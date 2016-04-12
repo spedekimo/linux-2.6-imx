@@ -147,8 +147,8 @@
 	mxcfb1: fb@0 {
 		compatible = "fsl,mxc_sdc_fb";
 		disp_dev = "ldb";
-		interface_pix_fmt = "RGB666";
-		default_bpp = <16>;
+		interface_pix_fmt = "RGB24";
+		default_bpp = <24>;
 		int_clk = <0>;
 		late_init = <0>;
 		status = "disabled";
@@ -751,15 +751,15 @@
 		display-timings {
 			native-mode = <&timingr0>;
 			timingr0: hsd100pxn1 {
-				clock-frequency = <30000000>;
-				hactive = <800>;
-				vactive = <480>;
-				hback-porch = <28>;
-				hfront-porch = <17>;
-				vback-porch = <13>;
-				vfront-porch = <20>;
-				hsync-len = <20>;
-				vsync-len = <13>;
+				clock-frequency = <71100000>;
+				hactive = <1280>;
+				vactive = <800>;
+				hback-porch = <50>;
+				hfront-porch = <60>;
+				vback-porch = <10>;
+				vfront-porch = <13>;
+				hsync-len = <50>;
+				vsync-len = <10>;
 			};
 		};
 		
@@ -767,38 +767,38 @@
 		display-timings-alternate {
 			native-mode = <&timing0c>;
 			timing0c: hsd100pxn1 {
-				clock-frequency = <32000000>;
-				hactive = <800>;
-				vactive = <480>;
-				hback-porch = <39>;
-				hfront-porch = <39>;
-				vback-porch = <29>;
+				clock-frequency = <71100000>;
+				hactive = <1280>;
+				vactive = <800>;
+				hback-porch = <50>;
+				hfront-porch = <60>;
+				vback-porch = <10>;
 				vfront-porch = <13>;
-				hsync-len = <47>;
-				vsync-len = <2>;
+				hsync-len = <50>;
+				vsync-len = <10>;
 			};
 		};
 	};
 
 	lvds-channel@1 {
 		fsl,data-mapping = "spwg";
-		fsl,data-width = <18>;
+		fsl,data-width = <24>;
 		crtc = "ipu1-di1";
 		primary;
 		status = "okay";
 
 		display-timings {
 			native-mode = <&timing1>;
-			timing1: hsd100pxn1 {
-				clock-frequency = <32000000>;
-				hactive = <800>;
-				vactive = <480>;
-				hback-porch = <39>;
-				hfront-porch = <39>;
-				vback-porch = <29>;
+			timing1: AM-1280800NCTZQW-T20H {
+				clock-frequency = <71100000>;
+				hactive = <1280>;
+				vactive = <800>;
+				hback-porch = <50>;
+				hfront-porch = <60>;
+				vback-porch = <10>;
 				vfront-porch = <13>;
-				hsync-len = <47>;
-				vsync-len = <2>;
+				hsync-len = <50>;
+				vsync-len = <10>;
 			};
 		};
 	};
@@ -862,46 +862,6 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_flexcan1_3>;
 	status = "okay";
-};
-
-&gpmi { /* nand flash 0.5 GB partition table */
-	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_gpmi_nand_v1>;
-	status = "okay";
-
-	partition@0 {
-		label = "spl";
-		reg = <0x00000000 0x00200000>;
-	};
-
-	partition@1 {
-		label = "bootloader";
-		reg = <0x00200000 0x00200000>;
-	};
-
-
-	partition@2 {
-		label = "kernel";
-		reg = <0x00400000 0x00600000>;
-	};
-
-	partition@3 {
-		label = "rootfs";
-		reg = <0x00a00000 0x3f600000>;
-	};
-/* Overlaped partition used to flash Android */
-	partition@4 {
-		label = "android_boot";
-		reg = <0x00400000 0x01000000>;
-	};
-	partition@5 {
-		label = "android_recovery";
-		reg = <0x01400000 0x01c00000>;
-	};
-	partition@6 {
-		label = "android_rootfs";
-		reg = <0x03000000 0x3d000000>;
-	};
 };
 
 &usbh1 {
